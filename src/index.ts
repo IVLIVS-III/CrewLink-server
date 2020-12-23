@@ -7,6 +7,7 @@ import socketIO from 'socket.io';
 import Tracer from 'tracer';
 import morgan from 'morgan';
 import publicIp from 'public-ip';
+import peerConfig from './peer-config';
 
 const httpsEnabled = !!process.env.HTTPS;
 
@@ -38,9 +39,13 @@ interface Signal {
 	to: string;
 }
 
-app.set('view engine', 'pug')
-app.use(morgan('combined'))
-app.use(express.static('offsets'))
+interface SetIDsPacket {
+	[key: string]: number
+}
+
+app.set('view engine', 'pug');
+app.use(morgan('combined'));
+app.use(express.static('offsets'));
 let connectionCount = 0;
 let address = process.env.ADDRESS;
 
@@ -56,13 +61,14 @@ app.get('/health', (req, res) => {
 		name: process.env.NAME,
 		supportedVersions
 	});
-})
-
+});
 
 io.on('connection', (socket: socketIO.Socket) => {
 	connectionCount++;
 	logger.info("Total connected: %d", connectionCount);
 	let code: string | null = null;
+
+	socket.emit('peerConfig', peerConfig);
 
 	socket.on('join', (c: string, id: number) => {
 		if (typeof c !== 'string' || typeof id !== 'number') {
@@ -74,9 +80,9 @@ io.on('connection', (socket: socketIO.Socket) => {
 		socket.join(code);
 		socket.to(code).broadcast.emit('join', socket.id, id);
 
-		let socketsInLobby = Object.keys(io.sockets.adapter.rooms[code].sockets);
-		let ids: any = {};
-		for (let s of socketsInLobby) {
+		const socketsInLobby = Object.keys(io.sockets.adapter.rooms[code].sockets);
+		const ids: SetIDsPacket = {};
+		for (const s of socketsInLobby) {
 			if (s !== socket.id)
 				ids[s] = playerIds.get(s);
 		}
@@ -91,12 +97,12 @@ io.on('connection', (socket: socketIO.Socket) => {
 		}
 		playerIds.set(socket.id, id);
 		socket.to(code).broadcast.emit('setId', socket.id, id);
-	})
+	});
 
 
 	socket.on('leave', () => {
 		if (code) socket.leave(code);
-	})
+	});
 
 	socket.on('signal', (signal: Signal) => {
 		if (typeof signal !== 'object' || !signal.data || !signal.to || typeof signal.to !== 'string') {
@@ -115,9 +121,8 @@ io.on('connection', (socket: socketIO.Socket) => {
 		connectionCount--;
 		playerIds.delete(socket.id);
 		logger.info("Total connected: %d", connectionCount);
-	})
-
-})
+	});
+});
 
 server.listen(port);
 (async () => {

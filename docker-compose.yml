@@ -2,7 +2,7 @@ version: "3.8"
 services:
     server:
         build: .
-        image: ottomated/crewlink-server:build
+        image: ottomated/crewlink-server-1-2-0-m-1:build
         container_name: crewlinkserver
         ports:
             - "9736:9736"
@@ -12,8 +12,8 @@ services:
         expose:
             - "9736"
             # - "443" # Uncomment this if you enable HTTPS
-            - "3478:3478"
-            - "49152-65535:49152-65535"
+            - "3478"
+            - "49152-65535"
         environment:
             - "ADDRESS=crewlink.ivlivs.dev"
             # - "NAME=" Specify the server name

@@ -16,6 +16,6 @@ services:
             - "49152-65535:49152-65535"
         environment:
             - "ADDRESS=crewlink.ivlivs.dev"
-            - "NAME=crewlink.ivlivs.dev"
+            # - "NAME=" Specify the server name
             # - "HTTPS" Enables https. You must place privkey.pem and fullchain.pem in your CWD.
             # - "SSLPATH=" Specifies an alternate path to SSL certificates.

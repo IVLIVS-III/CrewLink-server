@@ -14,10 +14,10 @@ USER node
 COPY ./ /app/
 
 # Install NPM packages
-RUN yarn install
+RUN yarn install -v
 
 # Compile project
-RUN yarn compile
+RUN yarn compile -v
 
 # Tell the Docker engine the default port is 9736
 EXPOSE 9736

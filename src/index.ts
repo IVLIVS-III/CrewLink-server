@@ -95,6 +95,7 @@ app.get('/health', (req, res) => {
 		uptime: process.uptime(),
 		connectionCount,
 		address,
+		publicIpV4,
 		name: process.env.NAME
 	});
 })

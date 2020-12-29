@@ -7,17 +7,17 @@ RUN mkdir /app && chown node:node /app
 # Change to the /app directory *and* make it the default execution directory
 WORKDIR /app
 
-# Do all remaining actions as node, and start the image as node
-USER node
-
 # Copy the repo contents from the build context into the image
 COPY ./ /app/
 
 # Install NPM packages
-RUN yarn install -v
+RUN yarn install --verbose
 
 # Compile project
-RUN yarn compile -v
+RUN yarn compile
+
+# Do all remaining actions as node, and start the image as node
+USER node
 
 # Tell the Docker engine the default port is 9736
 EXPOSE 9736

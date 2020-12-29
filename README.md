@@ -39,10 +39,10 @@
 ## Changes
 
 This branch includes some PRs of the original that haven't been merged yet. These are:
-* #65: Create docker-compose.yml (https://github.com/ottomated/CrewLink-server/pull/65)
-* #28: Allow server host to decide peer to peer behavior (https://github.com/ottomated/CrewLink-server/pull/28)
+* [#65](https://github.com/ottomated/CrewLink-server/pull/65): Create docker-compose.yml
+* [#28](https://github.com/ottomated/CrewLink-server/pull/28): Allow server host to decide peer to peer behavior
 
-Use this version together with the modified client version at https://github.com/IVLIVS-III/CrewLink/tree/1.2.0-m.1
+Use this version together with the [modified client version](https://github.com/IVLIVS-III/CrewLink/tree/1.2.0-m.1).
 
 
 <!-- ABOUT THE PROJECT -->

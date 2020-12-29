@@ -11,6 +11,7 @@ interface IntegratedRelaySettings {
 	maxPort: number;
 	listeningPort: number;
 	debugLevel: 'OFF' | 'FATAL' | 'ERROR' | 'WARN' | 'INFO' | 'DEBUG' | 'TRACE' | 'ALL';
+	useIP: boolean;
 }
 
 interface PeerConfig {
@@ -26,7 +27,8 @@ const DEFAULT_PEER_CONFIG: PeerConfig = {
 		minPort: 49152,
 		maxPort: 65535,
 		listeningPort: 3478,
-		debugLevel: 'INFO'
+		debugLevel: 'INFO',
+		useIP: false,
 	},
 	iceServers: [
 		{

@@ -84,7 +84,6 @@ if (!address) {
 	logger.error('You must set the ADDRESS environment variable.');
 	process.exit(1);
 }
-let publicIpV4 = address;
 
 app.get('/', (_, res) => {
 	res.render('index', { connectionCount, address });
@@ -95,7 +94,6 @@ app.get('/health', (req, res) => {
 		uptime: process.uptime(),
 		connectionCount,
 		address,
-		publicIpV4,
 		name: process.env.NAME
 	});
 })
@@ -133,7 +131,7 @@ io.on('connection', (socket: socketIO.Socket) => {
 		turnServer.addUser(socket.id, turnCredential);
 		logger.info(`Adding socket "${socket.id}" as TURN user.`)
 		clientPeerConfig.iceServers.push({
-			urls: `turn:${publicIpV4}:${peerConfig.integratedRelay.listeningPort}`,
+			urls: `turn:${address}:${peerConfig.integratedRelay.listeningPort}`,
 			username: socket.id,
 			credential: turnCredential
 		});
@@ -229,9 +227,8 @@ server.listen(port);
 logger.info('CrewLink Server started: %s', address);
 
 (async () => {
-	if (publicIpV4 == 'useip') {
-		publicIpV4 = `${await publicIp.v4()}`;
-		address = publicIpV4;
-		logger.info('TURN Server using ipv4 address: %s', publicIpV4);
+	if (peerConfig.integratedRelay.useIP) {
+		address = `${await publicIp.v4()}`;
+		logger.info('CrewLink/TURN Server using ipv4 address: %s', address);
 	}
 })();

@@ -233,4 +233,5 @@ logger.info('CrewLink Server started: %s', address);
 		publicIpV4 = `${await publicIp.v4()}`;
 		address = publicIpV4;
 	}
+	logger.info('TURN Server using ipv4 address: %s', publicIpV4);
 })();

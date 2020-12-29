@@ -8,7 +8,8 @@ import Tracer from 'tracer';
 import morgan from 'morgan';
 import TurnServer from 'node-turn';
 import crypto from 'crypto';
-import peerConfig  from './peerConfig';
+import publicIp from 'public-ip';
+import peerConfig from './peerConfig';
 import { ICEServer } from './ICEServer';
 
 const supportedCrewLinkVersions = new Set(['1.2.0', '0.0.0']);
@@ -51,7 +52,7 @@ if (peerConfig.integratedRelay.enabled) {
 			turnLogger[level.toLowerCase()](message)
 		}
 	})
-	
+
 	turnServer.start();
 }
 
@@ -83,6 +84,7 @@ if (!address) {
 	logger.error('You must set the ADDRESS environment variable.');
 	process.exit(1);
 }
+let publicIpV4 = address;
 
 app.get('/', (_, res) => {
 	res.render('index', { connectionCount, address });
@@ -122,7 +124,7 @@ io.on('connection', (socket: socketIO.Socket) => {
 
 	const clientPeerConfig: ClientPeerConfig = {
 		forceRelayOnly: peerConfig.forceRelayOnly,
-		iceServers: peerConfig.iceServers? [...peerConfig.iceServers] : []
+		iceServers: peerConfig.iceServers ? [...peerConfig.iceServers] : []
 	}
 
 	if (turnServer) {
@@ -130,7 +132,7 @@ io.on('connection', (socket: socketIO.Socket) => {
 		turnServer.addUser(socket.id, turnCredential);
 		logger.info(`Adding socket "${socket.id}" as TURN user.`)
 		clientPeerConfig.iceServers.push({
-			urls: `turn:${address}:${peerConfig.integratedRelay.listeningPort}`,
+			urls: `turn:${publicIpV4}:${peerConfig.integratedRelay.listeningPort}`,
 			username: socket.id,
 			credential: turnCredential
 		});
@@ -224,3 +226,10 @@ io.on('connection', (socket: socketIO.Socket) => {
 
 server.listen(port);
 logger.info('CrewLink Server started: %s', address);
+
+(async () => {
+	if (publicIpV4 === 'useip') {
+		publicIpV4 = `${await publicIp.v4()}`;
+		address = publicIpV4;
+	}
+})();
